@@ -8,8 +8,8 @@ from PIL import Image
 # Configuração inicial
 d = st.sidebar
 st.set_page_config(layout="wide")
-st.title("Simulador de Vibração Veicular MDOF")
-st.markdown("Modelo com carga na caçamba, chassi, motorista e eixos com molas.")
+st.title("Simulador de Vibração Veicular")
+st.markdown("Feito por Felipe Veiga, como trabalho final da disciplina de Vibrações Mecânicas. Modelo com carga na caçamba, chassi, motorista e eixos com molas. ")
 
 # Exibe imagem
 d.header("Parâmetros do Sistema")
