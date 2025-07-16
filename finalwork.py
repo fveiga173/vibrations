@@ -9,7 +9,7 @@ from PIL import Image
 d = st.sidebar
 st.set_page_config(layout="wide")
 st.title("Simulador de Vibração Veicular")
-st.markdown("Modelo com carga na caçamba, chassi, motorista e eixos com molas.Feito por Felipe Veiga, como entre do Trabalho final da Disciplina de Vibrações Mecânicas - 15/07/2025.")
+st.markdown("Modelo com carga na caçamba, chassi, motorista e eixos com molas. Feito por Felipe Veiga, como Trabalho final da Disciplina de Vibrações Mecânicas - 15/07/2025.")
 
 # Exibe imagem
 d.header("Parâmetros do Sistema")
