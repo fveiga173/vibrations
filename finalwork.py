@@ -10,7 +10,7 @@ st.title("Simulador de Vibração Veicular MDOF")
 st.markdown("Modelo com carga na caçamba, chassi, motorista e eixos com molas.")
 
 # Mostra imagem
-image = Image.open("modelo.png")
+image = Image.open("https://github.com/fveiga173/vibrations/blob/main/modelo.jpg")
 st.image(image, caption="Esquema do modelo físico", use_column_width=True)
 
 # Entradas
