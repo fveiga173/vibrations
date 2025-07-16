@@ -15,28 +15,62 @@ st.image(image, caption="Esquema do modelo físico", use_container_width=True)
 
 # Entradas
 st.sidebar.header("Parâmetros do Sistema")
+st.sidebar.header("Configuração do Veículo")
 
-m1 = st.sidebar.number_input("Massa da carga (m1)", 10.0, 100.0, 25.0)
-m2 = st.sidebar.number_input("Massa do chassi (m2)", 10.0, 100.0, 50.0)
-m3 = st.sidebar.number_input("Massa do motorista (m3)", 5.0, 50.0, 10.0)
-m4 = st.sidebar.number_input("Massa do eixo dianteiro (m4)", 5.0, 50.0, 10.0)
-m5 = st.sidebar.number_input("Massa do eixo traseiro (m5)", 5.0, 50.0, 10.0)
+opcao = st.sidebar.selectbox("Escolha um perfil de veículo:", ["Personalizado", "Carro", "Pickup", "Caminhão"])
 
-k1 = st.sidebar.number_input("Rigidez k1", 100.0, 10000.0, 1000.0)
-k2 = st.sidebar.number_input("Rigidez k2", 100.0, 10000.0, 1000.0)
-k3 = st.sidebar.number_input("Rigidez k3 (assento)", 100.0, 10000.0, 1000.0)
-k4 = st.sidebar.number_input("Rigidez k4 (chassi-eixo dianteiro)", 100.0, 10000.0, 1000.0)
-k5 = st.sidebar.number_input("Rigidez k5 (pneus dianteiros)", 100.0, 10000.0, 1000.0)
-k6 = st.sidebar.number_input("Rigidez k6 (chassi-eixo traseiro)", 100.0, 10000.0, 1000.0)
-k7 = st.sidebar.number_input("Rigidez k7 (pneus traseiros)", 100.0, 10000.0, 1000.0)
+# Valores padrão
+valores = {
+    "m1": 25.0, "m2": 50.0, "m3": 10.0, "m4": 10.0, "m5": 10.0,
+    "k1": 1000.0, "k2": 1000.0, "k3": 1000.0, "k4": 1000.0,
+    "k5": 1000.0, "k6": 1000.0, "k7": 1000.0,
+    "a": 0.1, "b": 0.1, "c": 0.1, "d": 0.1, "e": 0.1, "f": 0.1, "g": 0.1
+}
 
-a = st.sidebar.number_input("Distância a", 0.01, 1.0, 0.1)
-b = st.sidebar.number_input("Distância b", 0.01, 1.0, 0.1)
-c = st.sidebar.number_input("Distância c", 0.01, 1.0, 0.1)
-d = st.sidebar.number_input("Distância d", 0.01, 1.0, 0.1)
-e = st.sidebar.number_input("Distância e", 0.01, 1.0, 0.1)
-f = st.sidebar.number_input("Distância f", 0.01, 1.0, 0.1)
-g = st.sidebar.number_input("Distância g", 0.01, 1.0, 0.1)
+if opcao == "Carro":
+    valores.update({
+        "m1": 10, "m2": 40, "m3": 80, "m4": 30, "m5": 30,
+        "k1": 1500, "k2": 1500, "k3": 800, "k4": 1200, "k5": 1200,
+        "k6": 1500, "k7": 1500,
+        "a": 0.1, "b": 0.1, "c": 0.1, "d": 0.1, "e": 0.1, "f": 0.1, "g": 0.1
+    })
+elif opcao == "Pickup":
+    valores.update({
+        "m1": 100, "m2": 300, "m3": 80, "m4": 60, "m5": 60,
+        "k1": 3000, "k2": 3000, "k3": 1000, "k4": 2500, "k5": 2500,
+        "k6": 3000, "k7": 3000,
+        "a": 0.15, "b": 0.15, "c": 0.15, "d": 0.15, "e": 0.15, "f": 0.15, "g": 0.15
+    })
+elif opcao == "Caminhão":
+    valores.update({
+        "m1": 500, "m2": 2000, "m3": 100, "m4": 150, "m5": 150,
+        "k1": 10000, "k2": 10000, "k3": 3000, "k4": 8000, "k5": 8000,
+        "k6": 10000, "k7": 10000,
+        "a": 0.3, "b": 0.3, "c": 0.3, "d": 0.3, "e": 0.3, "f": 0.3, "g": 0.3
+    })
+
+# Inputs com valores dinâmicos
+m1 = st.sidebar.number_input("Massa da carga (m1)", 1.0, 3000.0, valores["m1"])
+m2 = st.sidebar.number_input("Massa do chassi (m2)", 1.0, 3000.0, valores["m2"])
+m3 = st.sidebar.number_input("Massa do motorista (m3)", 1.0, 3000.0, valores["m3"])
+m4 = st.sidebar.number_input("Massa do eixo dianteiro (m4)", 1.0, 3000.0, valores["m4"])
+m5 = st.sidebar.number_input("Massa do eixo traseiro (m5)", 1.0, 3000.0, valores["m5"])
+
+k1 = st.sidebar.number_input("Rigidez k1", 100.0, 20000.0, valores["k1"])
+k2 = st.sidebar.number_input("Rigidez k2", 100.0, 20000.0, valores["k2"])
+k3 = st.sidebar.number_input("Rigidez k3 (assento)", 100.0, 20000.0, valores["k3"])
+k4 = st.sidebar.number_input("Rigidez k4 (chassi-eixo dianteiro)", 100.0, 20000.0, valores["k4"])
+k5 = st.sidebar.number_input("Rigidez k5 (pneus dianteiros)", 100.0, 20000.0, valores["k5"])
+k6 = st.sidebar.number_input("Rigidez k6 (chassi-eixo traseiro)", 100.0, 20000.0, valores["k6"])
+k7 = st.sidebar.number_input("Rigidez k7 (pneus traseiros)", 100.0, 20000.0, valores["k7"])
+
+a = st.sidebar.number_input("Distância a", 0.01, 2.0, valores["a"])
+b = st.sidebar.number_input("Distância b", 0.01, 2.0, valores["b"])
+c = st.sidebar.number_input("Distância c", 0.01, 2.0, valores["c"])
+d = st.sidebar.number_input("Distância d", 0.01, 2.0, valores["d"])
+e = st.sidebar.number_input("Distância e", 0.01, 2.0, valores["e"])
+f = st.sidebar.number_input("Distância f", 0.01, 2.0, valores["f"])
+g = st.sidebar.number_input("Distância g", 0.01, 2.0, valores["g"])
 
 if st.sidebar.button("Calcular e Simular"):
 
