@@ -11,7 +11,7 @@ st.markdown("Modelo com carga na caçamba, chassi, motorista e eixos com molas."
 
 # Mostra imagem
 image = Image.open("modelo.jpg")
-st.image(image, caption="Esquema do modelo físico", use_column_width=True)
+st.image(image, caption="Esquema do modelo físico", use_container_width=True)
 
 # Entradas
 st.sidebar.header("Parâmetros do Sistema")
