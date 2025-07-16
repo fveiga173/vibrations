@@ -123,9 +123,18 @@ if d.button("Calcular e Simular"):
     response = VETn @ (Cs * MAT1 + Sn * MAT2)
 
     st.subheader("Resposta em Vibração Livre")
+    nomes = [
+        "Deslocamento do chassi (xg2)",
+        "Rotação do chassi (θ2)",
+        "Deslocamento da carga (xg1)",
+        "Rotação da carga (θ1)",
+        "Deslocamento do motorista (x3)",
+        "Deslocamento do eixo dianteiro (x4)",
+        "Deslocamento do eixo traseiro (x5)"
+    ]
     fig, ax = plt.subplots(figsize=(10, 4))
     for i in range(response.shape[0]):
-        ax.plot(t, response[i], label=f'x{i+1}')
+        ax.plot(t, response[i], label=nomes[i])
     ax.set_xlabel("Tempo (s)")
     ax.set_ylabel("Deslocamento (m)")
     ax.legend()
