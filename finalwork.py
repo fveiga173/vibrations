@@ -39,8 +39,30 @@ if perfil != "Personalizado" and d.button("Aplicar perfil selecionado"):
 # Entradas com valores vinculados ao estado
 v = st.session_state.valores
 
+labels = {
+    "m1": "Massa da carga na caçamba (m1)",
+    "m2": "Massa do chassi (m2)",
+    "m3": "Massa do motorista (m3)",
+    "m4": "Massa do eixo dianteiro (m4)",
+    "m5": "Massa do eixo traseiro (m5)",
+    "k1": "Rigidez da mola 1 (k1) - suporte carga esquerda",
+    "k2": "Rigidez da mola 2 (k2) - suporte carga direita",
+    "k3": "Rigidez da mola do assento (k3)",
+    "k4": "Rigidez entre chassi e eixo dianteiro (k4)",
+    "k5": "Rigidez dos pneus dianteiros (k5)",
+    "k6": "Rigidez entre chassi e eixo traseiro (k6)",
+    "k7": "Rigidez dos pneus traseiros (k7)",
+    "a": "Distância a (entre chassi e mola k1)",
+    "b": "Distância b (entre chassi e mola k2)",
+    "c": "Distância c (entre carga e mola k6)",
+    "d": "Distância d (entre carga e mola k4)",
+    "e": "Distância e (entre carga e mola k1)",
+    "f": "Distância f (entre carga e mola k2)",
+    "g": "Distância g (entre carga e mola k3)"
+}
+
 for key in v:
-    v[key] = d.number_input(f"{key.upper()}:", 0.01, 3000.0, value=float(v[key]), key=key)
+    v[key] = d.number_input(labels.get(key, f"{key.upper()}:"), 0.01, 3000.0, value=float(v[key]), key=key)
 
 m1, m2, m3, m4, m5 = v['m1'], v['m2'], v['m3'], v['m4'], v['m5']
 k1, k2, k3, k4, k5, k6, k7 = v['k1'], v['k2'], v['k3'], v['k4'], v['k5'], v['k6'], v['k7']
@@ -132,7 +154,7 @@ if d.button("Calcular e Simular"):
         "Deslocamento do eixo dianteiro (x4)",
         "Deslocamento do eixo traseiro (x5)"
     ]
-    fig, ax = plt.subplots(figsize=(10,10))
+    fig, ax = plt.subplots(figsize=(10, 10))
     for i in range(response.shape[0]):
         ax.plot(t, response[i], label=nomes[i])
     ax.set_xlabel("Tempo (s)")
