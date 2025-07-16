@@ -137,6 +137,9 @@ if d.button("Calcular e Simular"):
         ax.plot(t, response[i], label=nomes[i])
     ax.set_xlabel("Tempo (s)")
     ax.set_ylabel("Deslocamento (m)")
-    ax.legend()
     ax.grid()
     st.pyplot(fig)
+    st.markdown("**Legenda:**  ")
+    for nome in nomes:
+        st.markdown(f"- {nome}")
+
