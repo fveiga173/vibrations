@@ -8,8 +8,8 @@ from PIL import Image
 # Configuração inicial
 d = st.sidebar
 st.set_page_config(layout="wide")
-st.title("Simulador de Vibração Veicular")
-st.markdown("Modelo com carga na caçamba, chassi, motorista e eixos com molas. Feito por Felipe Veiga, como Trabalho final da Disciplina de Vibrações Mecânicas - 15/07/2025.")
+st.title("Simulador de Vibração Veicular MDOF")
+st.markdown("Modelo com carga na caçamba, chassi, motorista e eixos com molas.")
 
 # Exibe imagem
 d.header("Parâmetros do Sistema")
@@ -62,7 +62,13 @@ labels = {
 }
 
 for key in v:
-    v[key] = d.number_input(labels.get(key, f"{key.upper()}:"), 0.01, 3000.0, value=float(v[key]), key=key)
+    if key.startswith("m"):
+        min_val, max_val = 0.01, 5000.0
+    elif key.startswith("k"):
+        min_val, max_val = 100.0, 50000.0
+    else:
+        min_val, max_val = 0.01, 5.0
+    v[key] = d.number_input(labels.get(key, f"{key.upper()}:"), min_val, max_val, value=float(v[key]), key=key)
 
 m1, m2, m3, m4, m5 = v['m1'], v['m2'], v['m3'], v['m4'], v['m5']
 k1, k2, k3, k4, k5, k6, k7 = v['k1'], v['k2'], v['k3'], v['k4'], v['k5'], v['k6'], v['k7']
@@ -154,11 +160,12 @@ if d.button("Calcular e Simular"):
         "Deslocamento do eixo dianteiro (x4)",
         "Deslocamento do eixo traseiro (x5)"
     ]
-    fig, ax = plt.subplots(figsize=(10, 10))
+    fig, ax = plt.subplots(figsize=(10, 4))
     for i in range(response.shape[0]):
         ax.plot(t, response[i], label=nomes[i])
     ax.set_xlabel("Tempo (s)")
     ax.set_ylabel("Deslocamento (m)")
+    
     ax.legend()
     ax.grid()
     st.pyplot(fig)
