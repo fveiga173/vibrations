@@ -1,7 +1,7 @@
+from sympy import symbols, zeros, expand, collect
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-import sympy as sp
 from PIL import Image
 
 # Configuração inicial
@@ -13,75 +13,74 @@ st.markdown("Modelo com carga na caçamba, chassi, motorista e eixos com molas."
 image = Image.open("modelo.jpg")
 st.image(image, caption="Esquema do modelo físico", use_container_width=True)
 
-# Entradas
-st.sidebar.header("Parâmetros do Sistema")
+# ==================== PERFIS DE VEÍCULO E CONTROLE DE ENTRADA ====================
+
 st.sidebar.header("Configuração do Veículo")
 
-opcao = st.sidebar.selectbox("Escolha um perfil de veículo:", ["Personalizado", "Carro", "Pickup", "Caminhão"])
-
-# Valores padrão
-valores = {
-    "m1": 25.0, "m2": 50.0, "m3": 10.0, "m4": 10.0, "m5": 10.0,
-    "k1": 1000.0, "k2": 1000.0, "k3": 1000.0, "k4": 1000.0,
-    "k5": 1000.0, "k6": 1000.0, "k7": 1000.0,
-    "a": 0.1, "b": 0.1, "c": 0.1, "d": 0.1, "e": 0.1, "f": 0.1, "g": 0.1
-}
-
-if opcao == "Carro":
-    valores.update({
+perfis = {
+    "Carro": {
         "m1": 10, "m2": 40, "m3": 80, "m4": 30, "m5": 30,
         "k1": 1500, "k2": 1500, "k3": 800, "k4": 1200, "k5": 1200,
         "k6": 1500, "k7": 1500,
         "a": 0.1, "b": 0.1, "c": 0.1, "d": 0.1, "e": 0.1, "f": 0.1, "g": 0.1
-    })
-elif opcao == "Pickup":
-    valores.update({
+    },
+    "Pickup": {
         "m1": 100, "m2": 300, "m3": 80, "m4": 60, "m5": 60,
         "k1": 3000, "k2": 3000, "k3": 1000, "k4": 2500, "k5": 2500,
         "k6": 3000, "k7": 3000,
         "a": 0.15, "b": 0.15, "c": 0.15, "d": 0.15, "e": 0.15, "f": 0.15, "g": 0.15
-    })
-elif opcao == "Caminhão":
-    valores.update({
+    },
+    "Caminhão": {
         "m1": 500, "m2": 2000, "m3": 100, "m4": 150, "m5": 150,
         "k1": 10000, "k2": 10000, "k3": 3000, "k4": 8000, "k5": 8000,
         "k6": 10000, "k7": 10000,
         "a": 0.3, "b": 0.3, "c": 0.3, "d": 0.3, "e": 0.3, "f": 0.3, "g": 0.3
-    })
+    }
+}
 
-# Inputs com valores dinâmicos
-m1 = st.sidebar.number_input("Massa da carga (m1)", 1.0, 3000.0, valores["m1"])
-m2 = st.sidebar.number_input("Massa do chassi (m2)", 1.0, 3000.0, valores["m2"])
-m3 = st.sidebar.number_input("Massa do motorista (m3)", 1.0, 3000.0, valores["m3"])
-m4 = st.sidebar.number_input("Massa do eixo dianteiro (m4)", 1.0, 3000.0, valores["m4"])
-m5 = st.sidebar.number_input("Massa do eixo traseiro (m5)", 1.0, 3000.0, valores["m5"])
+# Inicializa estado
+for key in ['m1','m2','m3','m4','m5','k1','k2','k3','k4','k5','k6','k7','a','b','c','d','e','f','g']:
+    if key not in st.session_state:
+        st.session_state[key] = 25.0 if key.startswith('m') else 1000.0 if key.startswith('k') else 0.1
 
-k1 = st.sidebar.number_input("Rigidez k1", 100.0, 20000.0, valores["k1"])
-k2 = st.sidebar.number_input("Rigidez k2", 100.0, 20000.0, valores["k2"])
-k3 = st.sidebar.number_input("Rigidez k3 (assento)", 100.0, 20000.0, valores["k3"])
-k4 = st.sidebar.number_input("Rigidez k4 (chassi-eixo dianteiro)", 100.0, 20000.0, valores["k4"])
-k5 = st.sidebar.number_input("Rigidez k5 (pneus dianteiros)", 100.0, 20000.0, valores["k5"])
-k6 = st.sidebar.number_input("Rigidez k6 (chassi-eixo traseiro)", 100.0, 20000.0, valores["k6"])
-k7 = st.sidebar.number_input("Rigidez k7 (pneus traseiros)", 100.0, 20000.0, valores["k7"])
+# Seleção de perfil
+perfil = st.sidebar.selectbox("Perfil de veículo", ["Personalizado"] + list(perfis.keys()))
+if perfil != "Personalizado":
+    if st.sidebar.button("Aplicar perfil"):
+        for key, val in perfis[perfil].items():
+            st.session_state[key] = val
 
-a = st.sidebar.number_input("Distância a", 0.01, 2.0, valores["a"])
-b = st.sidebar.number_input("Distância b", 0.01, 2.0, valores["b"])
-c = st.sidebar.number_input("Distância c", 0.01, 2.0, valores["c"])
-d = st.sidebar.number_input("Distância d", 0.01, 2.0, valores["d"])
-e = st.sidebar.number_input("Distância e", 0.01, 2.0, valores["e"])
-f = st.sidebar.number_input("Distância f", 0.01, 2.0, valores["f"])
-g = st.sidebar.number_input("Distância g", 0.01, 2.0, valores["g"])
+# Inputs com estado
+m1 = st.sidebar.number_input("Massa da carga (m1)", 1.0, 3000.0, value=st.session_state.m1, key="m1")
+m2 = st.sidebar.number_input("Massa do chassi (m2)", 1.0, 3000.0, value=st.session_state.m2, key="m2")
+m3 = st.sidebar.number_input("Massa do motorista (m3)", 1.0, 3000.0, value=st.session_state.m3, key="m3")
+m4 = st.sidebar.number_input("Massa do eixo dianteiro (m4)", 1.0, 3000.0, value=st.session_state.m4, key="m4")
+m5 = st.sidebar.number_input("Massa do eixo traseiro (m5)", 1.0, 3000.0, value=st.session_state.m5, key="m5")
 
+k1 = st.sidebar.number_input("Rigidez k1", 100.0, 20000.0, value=st.session_state.k1, key="k1")
+k2 = st.sidebar.number_input("Rigidez k2", 100.0, 20000.0, value=st.session_state.k2, key="k2")
+k3 = st.sidebar.number_input("Rigidez k3 (assento)", 100.0, 20000.0, value=st.session_state.k3, key="k3")
+k4 = st.sidebar.number_input("Rigidez k4 (chassi-eixo dianteiro)", 100.0, 20000.0, value=st.session_state.k4, key="k4")
+k5 = st.sidebar.number_input("Rigidez k5 (pneus dianteiros)", 100.0, 20000.0, value=st.session_state.k5, key="k5")
+k6 = st.sidebar.number_input("Rigidez k6 (chassi-eixo traseiro)", 100.0, 20000.0, value=st.session_state.k6, key="k6")
+k7 = st.sidebar.number_input("Rigidez k7 (pneus traseiros)", 100.0, 20000.0, value=st.session_state.k7, key="k7")
+
+a = st.sidebar.number_input("Distância a", 0.01, 2.0, value=st.session_state.a, key="a")
+b = st.sidebar.number_input("Distância b", 0.01, 2.0, value=st.session_state.b, key="b")
+c = st.sidebar.number_input("Distância c", 0.01, 2.0, value=st.session_state.c, key="c")
+d = st.sidebar.number_input("Distância d", 0.01, 2.0, value=st.session_state.d, key="d")
+e = st.sidebar.number_input("Distância e", 0.01, 2.0, value=st.session_state.e, key="e")
+f = st.sidebar.number_input("Distância f", 0.01, 2.0, value=st.session_state.f, key="f")
+g = st.sidebar.number_input("Distância g", 0.01, 2.0, value=st.session_state.g, key="g")
+
+# ==================== CÁLCULO ====================
 if st.sidebar.button("Calcular e Simular"):
 
-    # Variáveis simbólicas
-    symbs = sp.symbols('a b c d e f g k1 k2 k3 k4 k5 k6 k7 m1 m2 m3 m4 m5 I1 I2')
+    symbs = symbols('a b c d e f g k1 k2 k3 k4 k5 k6 k7 m1 m2 m3 m4 m5 I1 I2')
     vals = [a, b, c, d, e, f, g, k1, k2, k3, k4, k5, k6, k7, m1, m2, m3, m4, m5,
             (1/3)*m1*a**2, (1/3)*m2*b**2]
     subs = dict(zip(symbs, vals))
 
-    # Importa as equações do modelo simbólico (usa teu código que gera M e K)
-    from sympy import symbols, zeros, expand, collect
     xg2, tet2, xg1, tet1, x3, x4, x5 = symbols('xg2 tet2 xg1 tet1 x3 x4 x5')
     ag2, ate2, ag1, ate1, a3, a4, a5 = symbols('ag2 ate2 ag1 ate1 a3 a4 a5')
     xf = xg2 - a * tet2
@@ -108,7 +107,6 @@ if st.sidebar.button("Calcular e Simular"):
 
     VAR_D = [xg2, tet2, xg1, tet1, x3, x4, x5]
     VAR_A = [ag2, ate2, ag1, ate1, a3, a4, a5]
-
     EQ = [eq1, eq2, eq3, eq4, eq5, eq6, eq7]
     EQ = [-expand(eq) for eq in EQ]
     for i in range(7):
