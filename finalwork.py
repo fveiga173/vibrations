@@ -132,14 +132,11 @@ if d.button("Calcular e Simular"):
         "Deslocamento do eixo dianteiro (x4)",
         "Deslocamento do eixo traseiro (x5)"
     ]
-    fig, ax = plt.subplots(figsize=(10, 4))
+    fig, ax = plt.subplots(figsize=(10,10))
     for i in range(response.shape[0]):
         ax.plot(t, response[i], label=nomes[i])
     ax.set_xlabel("Tempo (s)")
     ax.set_ylabel("Deslocamento (m)")
+    ax.legend()
     ax.grid()
     st.pyplot(fig)
-    st.markdown("**Legenda:**  ")
-    for nome in nomes:
-        st.markdown(f"- {nome}")
-
